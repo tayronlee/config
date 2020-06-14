@@ -48,6 +48,8 @@ endif
 colorscheme one 
 highlight Visual cterm=reverse ctermbg=NONE
 highlight Normal ctermfg=145 ctermbg=NONE guifg=#ABB2BF guibg=NONE
+let g:one_allow_italics = 1
+call one#highlight('CursorLineNr', '', '333333', 'none')
 
 set hidden
 

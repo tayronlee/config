@@ -129,7 +129,7 @@ unset color_none color_blue
 source /usr/share/doc/fzf/examples/key-bindings.bash
 [[ $- == *i* ]] && source "/usr/share/bash-completion/completions/fzf" 2> /dev/null
 export FZF_DEFAULT_OPTS="--height 40% --reverse"
-export BAT_THEME="OneDark"
+export BAT_THEME="TwoDark"
 
 
 #python envs
