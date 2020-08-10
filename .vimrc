@@ -76,24 +76,26 @@ set timeoutlen=250 ttimeoutlen=0
 set splitbelow
 set splitright
 
-" Custom Commands
+"Custom Commands
 command! DiffChanges execute 'w !diff  % -'
+
 function! SwitchFiles()
-  let ext =  expand("%:e")
-  if ext == "cpp"
-    let file = join([expand("%:r"), ".hpp"], "")
-  elseif ext == "hpp"
-    let file = join([expand("%:r"), ".cpp"], "")
-  elseif ext == "c"
-    let file = join([expand("%:r"), ".h"], "")
-  elseif ext == "h"
-    let file = join([expand("%:r"), ".c"], "")
+  let l:ext = expand("%:e")
+  if l:ext == "cc"
+    let l:file = join([expand("%:r"),".h"], "")
+  elseif l:ext == "h"
+    let l:file = join([expand("%:r"),".cc"], "")
   else
-    let file = ""
+    let l:file = ""
   endif
-  if filereadable(file)
-    execute "edit " file
+  if filereadable(l:file)
+    execute "edit " l:file
   endif
+endfunction
+
+function! CopyCurrFileAndLine()
+  let l:currpos = join([expand("%"), line(".")], ":")
+  call system("echo " . l:currpos . " | xclip -i -sel clipboard")
 endfunction
 
 "Mappings
@@ -106,18 +108,21 @@ noremap <silent> <C-[>h :TmuxNavigateLeft<CR>
 noremap <silent> <C-[>j :TmuxNavigateDown<CR>
 noremap <silent> <C-[>k :TmuxNavigateUp<CR>
 noremap <silent> <C-[>l :TmuxNavigateRight<CR>
+
 " Copy in selection mode
-"xmap <silent> <C-c> :'<,'>w !xclip -i -sel clipboard<CR><CR> -> This takes whole lines
-xnoremap <silent> <C-c> "zy:call system("echo '<C-r>z'<Bar>xclip -i -sel clipboard")<CR>
+xnoremap <silent> <C-c> "zy:call system("echo " . shellescape('<C-r>z') . "<Bar>xclip -i -sel clipboard")<CR>
 " <C-l> clears search highlight
 if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
+
 " fzf
 nnoremap <Leader>f :Files<CR>
 nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>t "zyiw:Tags <C-r>z<CR>
-" custom
+
+"custom
 nnoremap <Leader>d :DiffChanges<CR>
-nnoremap <silent> <Leader>s :call SwitchFiles<CR>
+nnoremap <silent> <Leader>s :call SwitchFiles()<CR>
+nnoremap <silent> <Leader>c :call CopyCurrFileAndLine()<CR>
 
