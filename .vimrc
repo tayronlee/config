@@ -45,6 +45,8 @@ if !has('gui_running')
   set t_Co=256
 endif
 
+set wildmenu
+
 colorscheme one 
 highlight Visual cterm=reverse ctermbg=NONE
 highlight Normal ctermfg=145 ctermbg=NONE guifg=#ABB2BF guibg=NONE

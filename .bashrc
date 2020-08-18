@@ -128,9 +128,10 @@ unset color_none color_blue
 #fzf bindings
 source /usr/share/doc/fzf/examples/key-bindings.bash
 [[ $- == *i* ]] && source "/usr/share/bash-completion/completions/fzf" 2> /dev/null
-export FZF_DEFAULT_OPTS="--height 40% --reverse"
+export FZF_DEFAULT_OPTS="--height 40% --reverse --preview 'batcat --style numbers --color=always {}'"
 export BAT_THEME="TwoDark"
 
+alias bat=batcat
 
 #python envs
 export WORKON_HOME=$HOME/Code/Python/.virtualenvs
