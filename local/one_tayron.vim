@@ -1,9 +1,6 @@
-" =============================================================================
-" Filename: autoload/lightline/colorscheme/Tomorrow_Night_Eighties.vim
-" Author: itchyny
-" License: MIT License
-" Last Change: 2013/09/07 14:14:14.
-" =============================================================================
+" ==============================================================================================
+" ln -s <this_file>  ~/.vim/bundle/lightline.vim/autoload/lightline/colorscheme/one_tayron.vim
+" ==============================================================================================
 let s:base3 = '#cccccc'
 let s:base23 = '#bbbbbb'
 let s:base2 = '#aaaaaa'

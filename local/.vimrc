@@ -28,11 +28,6 @@ let g:lightline = {
 " colorscheme
 Plugin 'rakr/vim-one'
 
-" Other plugins:
-"  - YouCompleteMe
-"  - tags? cscope?
-"  - surround
-
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -42,11 +37,17 @@ syntax on
 set showcmd
 set shm-=S
 if !has('gui_running')
-  set t_Co=256
+"  set t_Co=256
+endif
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
 endif
 
 set wildmenu
 
+set background=dark
 colorscheme one 
 highlight Visual cterm=reverse ctermbg=NONE
 highlight Normal ctermfg=145 ctermbg=NONE guifg=#ABB2BF guibg=NONE
@@ -80,13 +81,14 @@ set splitright
 
 "Custom Commands
 command! DiffChanges execute 'w !diff  % -'
+command! -nargs=+ Grep execute 'silent grep! -r <args> .' | copen | redraw
 
 function! SwitchFiles()
   let l:ext = expand("%:e")
-  if l:ext == "cc"
-    let l:file = join([expand("%:r"),".h"], "")
-  elseif l:ext == "h"
-    let l:file = join([expand("%:r"),".cc"], "")
+  if l:ext == "cpp"
+    let l:file = join([expand("%:r"),".hpp"], "")
+  elseif l:ext == "hpp"
+    let l:file = join([expand("%:r"),".cpp"], "")
   else
     let l:file = ""
   endif
@@ -95,9 +97,19 @@ function! SwitchFiles()
   endif
 endfunction
 
-function! CopyCurrFileAndLine()
-  let l:currpos = join([expand("%"), line(".")], ":")
-  call system("echo " . l:currpos . " | xclip -i -sel clipboard")
+function! Copy(text)
+  call system("echo " . shellescape(a:text) . " | xclip -i -sel clipboard")
+endfunction
+
+function! GetCurrFileAndLine()
+  return join([expand("%"), line(".")], ":")
+endfunction
+
+function! GetVisualSelection()
+  normal! gv"zy
+  let raw = @z
+  let text = escape(raw, '\')
+  return text
 endfunction
 
 "Mappings
@@ -111,11 +123,11 @@ noremap <silent> <C-[>j :TmuxNavigateDown<CR>
 noremap <silent> <C-[>k :TmuxNavigateUp<CR>
 noremap <silent> <C-[>l :TmuxNavigateRight<CR>
 
-" Copy in selection mode
-xnoremap <silent> <C-c> "zy:call system("echo " . shellescape('<C-r>z') . "<Bar>xclip -i -sel clipboard")<CR>
-" <C-l> clears search highlight
-if maparg('<C-L>', 'n') ==# ''
-  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+" Copy in visual mode
+xnoremap <silent> <C-c> :call Copy(GetVisualSelection())<cr>
+" <c-l> clears search highlight
+if maparg('<c-l>', 'n') ==# ''
+  nnoremap <silent> <c-l> :nohlsearch<c-r>=has('diff')?'<bar>diffupdate':''<cr><cr><c-l>
 endif
 
 " fzf
@@ -126,5 +138,7 @@ nnoremap <Leader>t "zyiw:Tags <C-r>z<CR>
 "custom
 nnoremap <Leader>d :DiffChanges<CR>
 nnoremap <silent> <Leader>s :call SwitchFiles()<CR>
-nnoremap <silent> <Leader>c :call CopyCurrFileAndLine()<CR>
+nnoremap <silent> <Leader>c :call Copy(GetCurrFileAndLine())<CR>
 
+nnoremap <silent><C-Up> :m -2<CR>
+nnoremap <silent><C-Down> :m +1<CR>
