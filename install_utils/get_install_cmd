@@ -1,0 +1,9 @@
+#!/bin/bash
+release=`cat /etc/*-release | awk -F '=' '/DISTRIB_ID/ {print tolower($2)}' `
+case $release in
+  redhat|centos) cmd="yum install" ;;
+  ubuntu|debian) cmd="apt-get install" ;;
+  manjaro) cmd="pacman install" ;;
+  *) echo "$release not supported"; cmd="" ;;
+esac
+echo $cmd
