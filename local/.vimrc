@@ -36,16 +36,11 @@ filetype plugin indent on    " required
 syntax on
 set showcmd
 set shm-=S
-if !has('gui_running')
-"  set t_Co=256
-endif
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   set termguicolors
 endif
-
-set wildmenu
 
 set background=dark
 colorscheme one 
@@ -54,6 +49,7 @@ highlight Normal ctermfg=145 ctermbg=NONE guifg=#ABB2BF guibg=NONE
 let g:one_allow_italics = 1
 call one#highlight('CursorLineNr', '', '333333', 'none')
 
+set wildmenu
 set hidden
 
 set autoindent
@@ -78,6 +74,9 @@ set timeoutlen=250 ttimeoutlen=0
 "Splits
 set splitbelow
 set splitright
+
+"Remove trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
 
 "Custom Commands
 command! DiffChanges execute 'w !diff  % -'

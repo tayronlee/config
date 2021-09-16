@@ -1,0 +1,23 @@
+#!/bin/bash
+
+export ROOT=`pwd`
+
+python="python3"
+upgrade_cmd=`$(dirname "${BASH_SOURCE[0]}")/install_utils/get_upgrade_cmd`
+install_cmd=`$(dirname "${BASH_SOURCE[0]}")/install_utils/get_install_cmd`
+
+if [ -z "$upgrade_cmd" ] || [ -z "$install_cmd" ]
+then
+  exit
+fi
+
+if ! command -v $python &> /dev/null
+then
+  echo "$python not found"
+  $upgrade_cmd
+  $install_cmd $python
+fi
+$python --version
+
+$(dirname "${BASH_SOURCE[0]}")/install_utils/install_all.py
+$(dirname "${BASH_SOURCE[0]}")/install_utils/config_all.py

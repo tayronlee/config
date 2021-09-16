@@ -131,6 +131,8 @@ export FZF_DEFAULT_COMMAND="find -L . -type f"
 export FZF_DEFAULT_OPTS="--height 40% --reverse --preview 'batcat -p --color=always {} 2>/dev/null'"
 export BAT_THEME="TwoDark"
 
-alias bat='batcat -p'
 alias rm='rm -i'
-alias upgrade='sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y'
+alias bat='bat -p'
+alias vim*='vimfile=`fzf` && vim $vimfile ; unset vimfile'
+alias cd*='cd `find . -type d | fzf`'
+mkcd() { mkdir "$1" && cd "$1" ; }

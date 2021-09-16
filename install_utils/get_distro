@@ -1,0 +1,2 @@
+#!/bin/bash
+cat /etc/os-release | awk -F '=' ' /^NAME/ {gsub(/"/,"",$2); gsub(" ","",$2); print tolower($2)}' 

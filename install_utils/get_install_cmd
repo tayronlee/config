@@ -1,9 +1,10 @@
 #!/bin/bash
-release=`cat /etc/*-release | awk -F '=' '/DISTRIB_ID/ {print tolower($2)}' `
-case $release in
-  redhat|centos) cmd="yum install" ;;
-  ubuntu|debian) cmd="apt-get install" ;;
-  manjaro) cmd="pacman install" ;;
-  *) echo "$release not supported"; cmd="" ;;
+distro=`$(dirname "${BASH_SOURCE[0]}")/get_distro`
+case $distro in
+  ubuntu|debian) cmd="sudo apt-get install" ;;
+  centos) cmd="sudo yum install" ;;
+  manjarolinux) cmd="sudo pacman --noconfirm -S" ;;
+  "") echo "could not get distro"; exit 1 ;;
+  *) echo "$distro not supported"; exit 1 ;;
 esac
 echo $cmd
