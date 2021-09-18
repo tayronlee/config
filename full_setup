@@ -21,3 +21,4 @@ $python --version
 
 $(dirname "${BASH_SOURCE[0]}")/install_utils/install_all.py
 $(dirname "${BASH_SOURCE[0]}")/install_utils/config_all.py
+

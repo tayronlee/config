@@ -23,10 +23,23 @@ set laststatus=2
 set noshowmode
 let g:lightline = {
   \ 'colorscheme': 'one_tayron',
+  \ 'active': {
+  \   'left': [ [ 'mode', 'paste' ],
+  \             [ 'gitstatus', 'readonly', 'filename', 'modified' ] ]
+  \ },
+  \ 'component_function': {
+  \   'gitstatus': 'FugitiveStatusline'
+  \ },
   \ }
 
 " colorscheme
 Plugin 'rakr/vim-one'
+
+" async command dispatch
+Plugin 'tpope/vim-dispatch'
+
+" async command dispatch
+Plugin 'tpope/vim-fugitive'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -43,11 +56,13 @@ if exists('+termguicolors')
 endif
 
 set background=dark
-colorscheme one 
+colorscheme one
 highlight Visual cterm=reverse ctermbg=NONE
 highlight Normal ctermfg=145 ctermbg=NONE guifg=#ABB2BF guibg=NONE
 let g:one_allow_italics = 1
 call one#highlight('CursorLineNr', '', '333333', 'none')
+call one#highlight('Search', 'e06c75', '61afef', 'bold')
+call one#highlight('IncSearch', 'e06c75', '61afef', 'bold')
 
 set wildmenu
 set hidden
@@ -66,11 +81,14 @@ set incsearch
 set smartcase
 set ignorecase
 
-set foldmethod=syntax
 set foldlevel=10
+set foldmethod=syntax
+autocmd FileType cpp setlocal cino=N-s
+autocmd FileType python setlocal foldmethod=indent
 
 set timeoutlen=250 ttimeoutlen=0
 
+set backspace=indent,start
 "Splits
 set splitbelow
 set splitright
@@ -80,7 +98,8 @@ autocmd BufWritePre * :%s/\s\+$//e
 
 "Custom Commands
 command! DiffChanges execute 'w !diff  % -'
-command! -nargs=+ Grep execute 'silent grep! -r <args> .' | copen | redraw
+set grepprg=grep\ -rns
+command! -nargs=+ Grep execute 'silent grep! -r <args>' | copen 15 | redraw!
 
 function! SwitchFiles()
   let l:ext = expand("%:e")
@@ -101,7 +120,7 @@ function! Copy(text)
 endfunction
 
 function! GetCurrFileAndLine()
-  return join([expand("%"), line(".")], ":")
+  return join([expand("%:."), line(".")], ":")
 endfunction
 
 function! GetVisualSelection()
@@ -111,12 +130,15 @@ function! GetVisualSelection()
   return text
 endfunction
 
+"Version Control
+command! GitDiff execute "silent !git diff %" | redraw!
 "Mappings
 let mapleader = " "
 set mouse=a
 map <ScrollWheelUp> 10<C-Y>
 map <ScrollWheelDown> 10<C-E>
 let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_disable_when_zoomed = 1
 noremap <silent> <C-[>h :TmuxNavigateLeft<CR>
 noremap <silent> <C-[>j :TmuxNavigateDown<CR>
 noremap <silent> <C-[>k :TmuxNavigateUp<CR>
@@ -130,14 +152,17 @@ if maparg('<c-l>', 'n') ==# ''
 endif
 
 " fzf
+let g:fzf_layout = { 'down': '33%' }
 nnoremap <Leader>f :Files<CR>
 nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>t "zyiw:Tags <C-r>z<CR>
 
 "custom
 nnoremap <Leader>d :DiffChanges<CR>
+nnoremap <Leader>g "zyiw:Grep <C-r>z .<CR>
 nnoremap <silent> <Leader>s :call SwitchFiles()<CR>
 nnoremap <silent> <Leader>c :call Copy(GetCurrFileAndLine())<CR>
 
 nnoremap <silent><C-Up> :m -2<CR>
 nnoremap <silent><C-Down> :m +1<CR>
+

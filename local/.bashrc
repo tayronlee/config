@@ -118,21 +118,7 @@ fi
 
 ######################## PERSONAL ########################
 
-#prompt
-color_none="\[\033[00m\]"
-color_blue="\[\033[01;34m\]"
-PS1="${debian_chroot:+($debian_chroot)}\u${color_blue}@${color_none}\h${color_blue}[${color_none}\w${color_blue}]${color_none}$ "
-unset color_none color_blue
+if [ -f ~/.bashrc.tayron ]; then
+    source ~/.bashrc.tayron
+fi
 
-#fzf (obtained from vim plugin instead of apt) 
-source $HOME/.vim/bundle/fzf/shell/key-bindings.bash
-[[ $- == *i* ]] && source $HOME/.vim/bundle/fzf/shell/completion.bash 2> /dev/null
-export FZF_DEFAULT_COMMAND="find -L . -type f"
-export FZF_DEFAULT_OPTS="--height 40% --reverse --preview 'batcat -p --color=always {} 2>/dev/null'"
-export BAT_THEME="TwoDark"
-
-alias rm='rm -i'
-alias bat='bat -p'
-alias vim*='vimfile=`fzf` && vim $vimfile ; unset vimfile'
-alias cd*='cd `find . -type d | fzf`'
-mkcd() { mkdir "$1" && cd "$1" ; }
