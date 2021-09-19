@@ -1,74 +1,77 @@
 #!/usr/bin/env python3
-import os
-import subprocess
+import utils
 
-#vim
-#tmux
-#git
-#fzf
-#bat
-
-packages = [ {'name':'vim', 'commands':['vim'], 'version_cmd':'vim --version | head -n 1'},
-             {'name':'tmux', 'commands':['tmux'], 'version_cmd':'tmux -V'},
-             {'name':'git', 'commands':['git'], 'version_cmd':'git --version'},
-             {'name':'bat', 'commands':['bat', 'batcat'], 'version_cmd':'bat --version'},
-             #{'name':'cargo', 'commands':['cargo'], 'version_cmd':'cargo --version'},
-             {'name':'fzf', 'commands':['fzf'], 'version_cmd':'echo fzf `fzf --version`'} ]
+packages = [ {'name':'vim',
+              'commands':['vim'],
+              'version_cmd':'vim --version | head -n 1'},
+             {'name':'tmux',
+              'commands':['tmux'],
+              'version_cmd':'tmux -V'},
+             {'name':'git',
+              'commands':['git'],
+              'version_cmd':'git --version'},
+             {'name':'htop',
+              'commands':['htop'],
+              'version_cmd':'htop --v | head -n 1'},
+             {'name':'bat',
+              'commands':['bat', 'batcat'],
+              'version_cmd':'bat --version'},
+             {'name':'fzf',
+              'commands':['fzf'],
+              'version_cmd':'echo fzf `fzf --version`'} ]
 
 
 def main():
+    install_packages()
+    create_execs()
+
+
+def install_packages():
     to_install = []
     for pkg in packages:
-        if any(map(command_is_available, pkg['commands'])):
-            run_command(pkg['version_cmd'], echo='yes')
+        if any(map(utils.command_is_available, pkg['commands'])):
+            ok, msg = utils.run_command(pkg['version_cmd'])
+            print("Found " + msg)
         else:
             to_install.append(pkg['name'])
 
     if not to_install:
         exit()
 
-    ok, upgrade_command = run_local_script('get_upgrade_cmd')
+    ok, upgrade_command = utils.run_local_script('get_upgrade_cmd')
     if not ok:
         exit()
 
-    ok, install_command = run_local_script('get_install_cmd')
+    ok, install_command = utils.run_local_script('get_install_cmd')
     if not ok:
         exit()
 
-    ok, _ = run_command(upgrade_command)
+    print("Updating...")
+    ok, _ = utils.run_command(upgrade_command)
     if not ok:
         exit()
 
     for pkg_name in to_install:
-        run_command(install_command + " " + pkg_name, echo='yes')
+        print("Installing " + pkg_name + "...")
+        utils.run_command(install_command + " " + pkg_name)
 
 
-def command_is_available(command):
-    ok, _ = run_command('which ' + command, echo='no')
-    return ok
-
-
-def run_command(cmd, echo = 'on_error'):
-    echo_values = ['yes', 'no', 'on_error']
-    if echo not in echo_values:
-        raise ValueError("Invalid echo option. Expected one of %s" % echo_values)
-
-    result = subprocess.run(cmd, shell='bash', text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    ok = result.returncode == 0
-    msg = result.stdout.replace('\n','')
-
-    if (not ok) and (echo != 'no'):
-        print('Error: ' + msg)
-    elif (echo == 'yes'):
-        print(msg)
-
-    return [ok, msg]
-
-
-def run_local_script(script_name) :
-    base_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-    return run_command(base_path + script_name)
+def create_execs():
+    utils.create_exec_file("copy", ["#!/bin/bash",
+                                    "if [ $# -eq 0 ]; then",
+                                    "  xclip -i -sel clipboard 2>&1 > /dev/null",
+                                    "else",
+                                    "  echo $@ | xclip -i -sel clipboard 2>&1 > /dev/null",
+                                    "fia"])
+    utils.create_exec_file("paste", ["#!/bin/bash",
+                                     "xclip -o -sel clipboard"])
+    ok, upgrade_command = utils.run_local_script('get_upgrade_cmd')
+    if ok:
+        utils.create_exec_file("upgrade", ["#!/bin/bash",
+                                           upgrade_command,
+                                           "vim +PluginUpdate +qall"])
 
 
 if __name__ == "__main__":
     main()
+

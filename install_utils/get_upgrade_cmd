@@ -3,7 +3,7 @@ distro=`$(dirname "${BASH_SOURCE[0]}")/get_distro`
 case $distro in
   ubuntu|debian) cmd="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y" ;;
   centos) cmd="sudo yum ???" ;;
-  manjarolinux) cmd="sudo rm /var/lib/pacman/db.lck; sudo pacman --noconfirm -Syu" ;;
+  manjarolinux) cmd="sudo rm /var/lib/pacman/db.lck >& /dev/null; sudo pacman --noconfirm -Syu" ;;
   "") echo "could not get distro"; cmd="" ;;
   *) echo "$distro not supported"; cmd="" ;;
 esac

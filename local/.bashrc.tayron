@@ -14,7 +14,7 @@ export BAT_THEME="TwoDark"
 
 alias rm='rm -i'
 alias bat='bat -p'
-alias grep 'grep --color=auto -sI'
+alias grep='grep --color=auto -sI'
 alias vim*='vimfile=`fzf` && vim $vimfile ; unset vimfile'
 alias cd*='cd `find . -type d | fzf`'
 alias bat*='bat -p `fzf`'

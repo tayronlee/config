@@ -1,24 +1,30 @@
 #!/bin/bash
 
-export ROOT=`pwd`
+PYTHON="python3"
 
-python="python3"
-upgrade_cmd=`$(dirname "${BASH_SOURCE[0]}")/install_utils/get_upgrade_cmd`
-install_cmd=`$(dirname "${BASH_SOURCE[0]}")/install_utils/get_install_cmd`
+export INSTALL_DIR=$(readlink -f $(dirname "${BASH_SOURCE[0]}"))
 
-if [ -z "$upgrade_cmd" ] || [ -z "$install_cmd" ]
+UPGRADE_CMD=`$INSTALL_DIR/install_utils/get_upgrade_cmd`
+INSTALL_CMD=`$INSTALL_DIR/install_utils/get_install_cmd`
+
+if [ -z "$UPGRADE_CMD" ] || [ -z "$INSTALL_CMD" ]
 then
   exit
 fi
 
-if ! command -v $python &> /dev/null
+if ! command -v $PYTHON &> /dev/null
 then
-  echo "$python not found"
-  $upgrade_cmd
-  $install_cmd $python
+  echo "$PYTHON not found"
+  $UPGRADE_CMD
+  $INSTALL_CMD $PYTHON
 fi
-$python --version
+echo "Using `$PYTHON --version` "
 
-$(dirname "${BASH_SOURCE[0]}")/install_utils/install_all.py
-$(dirname "${BASH_SOURCE[0]}")/install_utils/config_all.py
+$INSTALL_DIR/install_utils/install_all.py
+$INSTALL_DIR/install_utils/config_all.py
 
+unset INSTALL_DIR
+
+echo ""
+read -p "Done. Press any key to continue..."
+reset

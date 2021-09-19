@@ -119,6 +119,6 @@ fi
 ######################## PERSONAL ########################
 
 if [ -f ~/.bashrc.tayron ]; then
-    source ~/.bashrc.tayron
+    . ~/.bashrc.tayron
 fi
 
