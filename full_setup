@@ -4,25 +4,38 @@ PYTHON="python3"
 
 export INSTALL_DIR=$(readlink -f $(dirname "${BASH_SOURCE[0]}"))
 
-UPGRADE_CMD=`$INSTALL_DIR/install_utils/get_upgrade_cmd`
+UPDATE_CMD=`$INSTALL_DIR/install_utils/get_update_cmd`
 INSTALL_CMD=`$INSTALL_DIR/install_utils/get_install_cmd`
 
-if [ -z "$UPGRADE_CMD" ] || [ -z "$INSTALL_CMD" ]
+if [ -z "$UPDATE_CMD" ] || [ -z "$INSTALL_CMD" ]
 then
   exit
 fi
 
-if ! command -v $PYTHON &> /dev/null
+if command -v $PYTHON &> /dev/null
 then
+  PYTHON_VERSION=`$PYTHON --version | awk '{print $NF}'`
+  PYTHON_VERSION_IS_OK=`printf '%s\n%s\n' "$PYTHON_VERSION" "3.7.0" | sort -VC ; echo $?`
+  if [ $PYTHON_VERSION_IS_OK == "0" ]; then
+    echo "$PYTHON version $PYTHON_VERSION is too old"
+  fi
+else
   echo "$PYTHON not found"
-  $UPGRADE_CMD
-  $INSTALL_CMD $PYTHON
 fi
+
+if [[ -z $PYTHON_VERSION_IS_OK || $PYTHON_VERSION_IS_OK != "1" ]]; then
+  $UPDATE_CMD
+  $INSTALL_CMD "$PYTHON.9"
+  ln -s `which python3.9` $INSTALL_DIR/python3
+  PATH=$INSTALL_DIR:$PATH
+fi
+
 echo "Using `$PYTHON --version` "
 
 $INSTALL_DIR/install_utils/install_all.py
 $INSTALL_DIR/install_utils/config_all.py
 
+rm -f $INSTALL_DIR/python3 &> /dev/null
 unset INSTALL_DIR
 
 echo ""

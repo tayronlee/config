@@ -38,7 +38,7 @@ def install_packages():
     if not to_install:
         exit()
 
-    ok, upgrade_command = utils.run_local_script('get_upgrade_cmd')
+    ok, update_command = utils.run_local_script('get_update_cmd')
     if not ok:
         exit()
 
@@ -47,7 +47,7 @@ def install_packages():
         exit()
 
     print("Updating...")
-    ok, _ = utils.run_command(upgrade_command)
+    ok, _ = utils.run_command(update_command)
     if not ok:
         exit()
 
@@ -65,10 +65,10 @@ def create_execs():
                                     "fia"])
     utils.create_exec_file("paste", ["#!/bin/bash",
                                      "xclip -o -sel clipboard"])
-    ok, upgrade_command = utils.run_local_script('get_upgrade_cmd')
+    ok, update_command = utils.run_local_script('get_update_cmd')
     if ok:
-        utils.create_exec_file("upgrade", ["#!/bin/bash",
-                                           upgrade_command,
+        utils.create_exec_file("update", ["#!/bin/bash",
+                                           update_command,
                                            "vim +PluginUpdate +qall"])
 
 

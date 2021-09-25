@@ -1,10 +1,10 @@
 #!/bin/bash
 distro=`$(dirname "${BASH_SOURCE[0]}")/get_distro`
 case $distro in
-  ubuntu|debian) cmd="sudo apt-get install" ;;
-  centos) cmd="sudo yum install" ;;
+  ubuntu|debian) cmd="sudo apt-get -y install" ;;
+# centos|centosstream) cmd="sudo yum -y install" ;;
   manjarolinux) cmd="sudo pacman --noconfirm -S" ;;
-  "") echo "could not get distro"; exit 1 ;;
-  *) echo "$distro not supported"; exit 1 ;;
+  "") echo "could not get distro" 1>&2 ;;
+  *) echo "$distro not supported" 1>&2 ;;
 esac
 echo $cmd
