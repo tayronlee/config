@@ -1,9 +1,48 @@
+#path
+if [[ ! `echo $PATH | sed 's/:/\n/g' | grep "$HOME/bin"` ]] ; then
+  export PATH="$HOME/bin:$PATH"
+fi
+
+#editor
+export EDITOR='/usr/bin/vim'
 
 #prompt
-color_none="\[\033[00m\]"
-color_blue="\[\033[01;34m\]"
-PS1="${debian_chroot:+($debian_chroot)}\u${color_blue}@${color_none}\h${color_blue}[${color_none}\w${color_blue}]${color_none}$ "
-unset color_none color_blue
+none="\[\033[00m\]"
+blue="\[\033[01;34m\]"
+get_git_info() {
+  status=`git status -sb 2> /dev/null`
+  if [[ $status ]]; then
+    branch=`echo "$status" | head -n 1 | sed 's/## //g' | sed 's/\.\.\..*//g'`
+    ahead=`echo "$status" | head -n 1 | grep -c "ahead"`
+    behind=`echo "$status" | head -n 1 | grep -c "behind"`
+    index=`echo "$status" | grep -c "^[MADRC]"`
+    wtree=`echo "$status" | grep -c "^.[MADRC?]"`
+    echo -en "\x01\033[01;34m\x02(\001\033[00m\x02" # blue paren
+    if [[ $branch == "HEAD (no branch)" ]]; then
+      echo -en "\x01\033[01;31m\x02HEAD\001\033[00m\x02" # red text
+    else
+      echo -n "$branch"
+    fi
+    if [[ $ahead != "0" ]]; then
+      echo -en "\x01\033[01;32m\x02 ^\x01\033[00m\x02" # green ^
+    fi
+    if [[ $behind != "0" ]]; then
+      echo -en "\x01\033[00;31m\x02 v\x01\033[00m\x02" # red v
+    fi
+    if [[ $index != "0" ]]; then
+      echo -en "\x01\033[01;34m\x02|\x01\033[00m\x02" # blue bar
+      echo -en "\x01\033[01;32m\x02${index}\x01\033[00m\x02" # green number
+    fi
+    if [[ $wtree != "0" ]]; then
+      echo -en "\x01\033[01;34m\x02|\x01\033[00m\x02" # blue bar
+      echo -en "\x01\033[01;31m\x02$wtree\x01\033[00m\x02" # red number
+    fi
+    echo -e "\x01\033[01;34m\x02)\x01\033[00m\x02" # blue paren
+  fi
+}
+PROMPT_COMMAND='git_info=`get_git_info`'
+export PS1="\u${blue}@${none}\h${blue}[${none}\w${blue}]${none}\${git_info}$ "
+unset none blue
 
 #fzf (obtained from vim plugin instead of apt)
 source $HOME/.vim/bundle/fzf/shell/key-bindings.bash
