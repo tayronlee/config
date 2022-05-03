@@ -48,6 +48,9 @@ def config_git():
     utils.run_command("git config --global user.name \"tayronlee\"")
     utils.run_command("git config --global user.email \"tayron@hotmail.com\"")
     utils.run_command("git config --global core.editor vim")
+    utils.run_command("git config --global diff.tool vimdiff")
+    utils.run_command("git config --global merge.tool vimdiff")
+    utils.run_command("git config --global difftool.prompt false")
 
 
 def get_config_dir():
