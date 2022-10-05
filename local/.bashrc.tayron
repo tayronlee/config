@@ -55,6 +55,8 @@ alias rm='rm -i'
 alias bat='bat -p'
 alias grep='grep --color=auto -sI'
 alias vim*='vimfile=`fzf` && vim $vimfile ; unset vimfile'
-alias cd*='cd `find . -type d | fzf`'
 alias bat*='bat -p `fzf`'
+cd* () {
+  cd `find . -type d | fzf --height 40% --reverse --preview 'ls --color=always {}'`
+}
 mkcd() { mkdir "$1" && cd "$1" ; }
