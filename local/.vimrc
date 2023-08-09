@@ -146,7 +146,7 @@ noremap <silent> <C-[>l :TmuxNavigateRight<CR>
 
 " Copy in visual mode
 xnoremap <silent> <C-c> :call Copy(GetVisualSelection())<cr>
-" <c-l> clears search highlight
+" Ctrl+l clears search highlight
 if maparg('<c-l>', 'n') ==# ''
   nnoremap <silent> <c-l> :nohlsearch<c-r>=has('diff')?'<bar>diffupdate':''<cr><cr><c-l>
 endif

@@ -68,9 +68,9 @@ def create_execs():
     ok, update_command = utils.run_local_script('get_update_cmd')
     if ok:
         utils.create_exec_file("update", ["#!/bin/bash",
-                                           update_command,
-                                           "vim +PluginUpdate +qall",
-                                           "sudo snap refresh"])
+                                          update_command + " && \\",
+                                          "vim +PluginUpdate +qall && \\",
+                                          "sudo snap refresh"])
 
 
 if __name__ == "__main__":

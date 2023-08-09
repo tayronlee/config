@@ -60,3 +60,12 @@ cd* () {
   cd `find . -type d | fzf --height 40% --reverse --preview 'ls --color=always {}'`
 }
 mkcd() { mkdir "$1" && cd "$1" ; }
+cheat() {
+  if [[ $# != 0 ]]; then
+    local query=$1;
+    if [[ $# > 1 ]]; then
+      query=$query"/"$(echo $* | awk '{for (i=2; i<NF; i++) printf $i "+"; print $NF}')
+    fi
+    curl cheat.sh/$query | bat
+  fi
+}
