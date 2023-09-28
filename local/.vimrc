@@ -172,6 +172,20 @@ nnoremap <Leader>f :Files<CR>
 nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>t "zyiw:Tags <C-r>z<CR>
 
+" posible LSP mappings
+" space gd -> goto definition LanguageClient_textDocument_definition()
+" space gt -> goto type definition
+" LanguageClient_textDocument_typeDefinition()
+" space gd -> goto implementation LanguageClient_textDocument_implementation()
+" space gr -> list references LanguageClient_textDocument_references()
+" space h  -> hover LanguageClient_textDocument_hover()
+
+" interesting diff command
+" vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis
+
+" zoom current tmux pane (maybe usefull for diffs)
+" call system('tmux -S ' . split($TMUX, ',')[0] . ' resize-pane -t $TMUX_PANE -Z')
+
 "custom
 nnoremap <Leader>d :DiffChanges<CR>
 nnoremap <Leader>g "zyiw:Grep <C-r>z .<CR>
