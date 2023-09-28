@@ -25,12 +25,21 @@ let g:lightline = {
   \ 'colorscheme': 'one_tayron',
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ],
-  \             [ 'gitstatus', 'readonly', 'filename', 'modified' ] ]
+  \             [ 'gitstatus', 'readonly', 'relativepath', 'modified' ] ]
   \ },
   \ 'component_function': {
   \   'gitstatus': 'FugitiveStatusline'
   \ },
   \ }
+
+" LSP support
+Plugin 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+let g:LanguageClient_serverCommands = {
+    \ 'cpp' : ['clangd']
+    \ }
 
 " colorscheme
 Plugin 'rakr/vim-one'
@@ -38,8 +47,13 @@ Plugin 'rakr/vim-one'
 " async command dispatch
 Plugin 'tpope/vim-dispatch'
 
-" async command dispatch
+" git integration
 Plugin 'tpope/vim-fugitive'
+
+Plugin 'vimwiki/vimwiki'
+
+let g:vimwiki_list = [{'path': '/home/tayron/notes',
+                     \ 'syntax': 'markdown', 'ext': '.md'}]
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -83,10 +97,9 @@ set ignorecase
 
 set foldlevel=10
 set foldmethod=syntax
-autocmd FileType cpp setlocal cino=N-s
 autocmd FileType python setlocal foldmethod=indent
 
-set timeoutlen=250 ttimeoutlen=0
+set timeoutlen=500 ttimeoutlen=0
 
 set backspace=indent,start
 "Splits
@@ -94,7 +107,7 @@ set splitbelow
 set splitright
 
 "Remove trailing whitespace on save
-autocmd BufWritePre * :%s/\s\+$//e
+"autocmd BufWritePre * :%s/\s\+$//e
 
 "Custom Commands
 command! DiffChanges execute 'w !diff  % -'
@@ -104,8 +117,10 @@ command! -nargs=+ Grep execute 'silent grep! -r <args>' | copen 15 | redraw!
 function! SwitchFiles()
   let l:ext = expand("%:e")
   if l:ext == "cpp"
-    let l:file = join([expand("%:r"),".hpp"], "")
-  elseif l:ext == "hpp"
+    "let l:file = join([expand("%:r"),".hpp"], "")
+    let l:file = join([expand("%:r"),".h"], "")
+  "elseif l:ext == "hpp"
+  elseif l:ext == "h"
     let l:file = join([expand("%:r"),".cpp"], "")
   else
     let l:file = ""
@@ -116,7 +131,7 @@ function! SwitchFiles()
 endfunction
 
 function! Copy(text)
-  call system("echo " . shellescape(a:text) . " | xclip -i -sel clipboard")
+  call system("echo -n " . shellescape(a:text) . " | /home/tayron/bin/copy")
 endfunction
 
 function! GetCurrFileAndLine()

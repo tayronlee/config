@@ -60,11 +60,14 @@ def create_execs():
     utils.create_exec_file("copy", ["#!/bin/bash",
                                     "if [ $# -eq 0 ]; then",
                                     "  xclip -i -sel clipboard 2>&1 > /dev/null",
+                                    "  #/mnt/c/Windows/system32/clip.exe 2>&1 > /dev/null",
                                     "else",
                                     "  echo $@ | xclip -i -sel clipboard 2>&1 > /dev/null",
+                                    "  #echo -n $@ | /mnt/c/Windows/system32/clip.exe 2>&1 > /dev/null",
                                     "fi"])
     utils.create_exec_file("paste", ["#!/bin/bash",
-                                     "xclip -o -sel clipboard"])
+                                     "xclip -o -sel clipboard",
+                                     "#powershell.exe -c \"& {Get-Clipboard -raw}\" | dos2unix | sed -z '$ s/\\n$//'"])
     ok, update_command = utils.run_local_script('get_update_cmd')
     if ok:
         utils.create_exec_file("update", ["#!/bin/bash",

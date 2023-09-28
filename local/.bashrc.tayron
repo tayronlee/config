@@ -3,6 +3,9 @@ if [[ ! `echo $PATH | sed 's/:/\n/g' | grep "$HOME/bin"` ]] ; then
   export PATH="$HOME/bin:$PATH"
 fi
 
+#tab behavior
+shopt -s direxpand
+
 #editor
 export EDITOR='/usr/bin/vim'
 
@@ -16,7 +19,7 @@ get_git_info() {
     ahead=`echo "$status" | head -n 1 | grep -c "ahead"`
     behind=`echo "$status" | head -n 1 | grep -c "behind"`
     index=`echo "$status" | grep -c "^[MADRC]"`
-    wtree=`echo "$status" | grep -c "^.[MADRC?]"`
+    wtree=`echo "$status" | grep -c "^.[MADRCU?]"`
     echo -en "\x01\033[01;34m\x02(\001\033[00m\x02" # blue paren
     if [[ $branch == "HEAD (no branch)" ]]; then
       echo -en "\x01\033[01;31m\x02HEAD\001\033[00m\x02" # red text
@@ -27,7 +30,7 @@ get_git_info() {
       echo -en "\x01\033[01;32m\x02 ^\x01\033[00m\x02" # green ^
     fi
     if [[ $behind != "0" ]]; then
-      echo -en "\x01\033[00;31m\x02 v\x01\033[00m\x02" # red v
+      echo -en "\x01\033[01;31m\x02 v\x01\033[00m\x02" # red v
     fi
     if [[ $index != "0" ]]; then
       echo -en "\x01\033[01;34m\x02|\x01\033[00m\x02" # blue bar
@@ -52,10 +55,12 @@ export FZF_DEFAULT_OPTS="--height 40% --reverse --preview 'batcat -p --color=alw
 export BAT_THEME="TwoDark"
 
 alias rm='rm -i'
-alias bat='bat -p'
+#alias bat='bat -p'
+alias bat='batcat -p'
 alias grep='grep --color=auto -sI'
 alias vim*='vimfile=`fzf` && vim $vimfile ; unset vimfile'
-alias bat*='bat -p `fzf`'
+#alias bat*='bat -p `fzf`'
+alias bat*='batcat -p `fzf`'
 cd* () {
   cd `find . -type d | fzf --height 40% --reverse --preview 'ls --color=always {}'`
 }
@@ -69,3 +74,7 @@ cheat() {
     curl cheat.sh/$query | bat
   fi
 }
+
+#direnv support
+eval "$(direnv hook bash)"
+#export DIRENV_LOG_FORMAT=
