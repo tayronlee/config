@@ -40,6 +40,7 @@ Plugin 'autozimu/LanguageClient-neovim', {
 let g:LanguageClient_serverCommands = {
     \ 'cpp' : ['clangd']
     \ }
+let g:LanguageClient_diagnosticsList = 'Disabled'
 
 " colorscheme
 Plugin 'rakr/vim-one'
@@ -68,6 +69,8 @@ if exists('+termguicolors')
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   set termguicolors
 endif
+set encoding=utf-8
+set termencoding=utf-8
 
 set background=dark
 colorscheme one
@@ -95,6 +98,9 @@ set incsearch
 set smartcase
 set ignorecase
 
+highlight ExtraWhitespace ctermbg=168 guibg=DarkRed
+autocmd Syntax * syn match ExtraWhitespace /\s\+$\|\t\+/
+
 set foldlevel=10
 set foldmethod=syntax
 autocmd FileType python setlocal foldmethod=indent
@@ -111,8 +117,8 @@ set splitright
 
 "Custom Commands
 command! DiffChanges execute 'w !diff  % -'
-set grepprg=grep\ -rns
-command! -nargs=+ Grep execute 'silent grep! -r <args>' | copen 15 | redraw!
+command! -nargs=+ Grep set grepprg=grep\ -rns | execute 'silent grep! <args>' | copen 15 | redraw!
+command! -nargs=+ GrepCpp set grepprg=grepcpp\ -p | execute 'silent grep! <args>' | copen 15 | redraw!
 
 function! SwitchFiles()
   let l:ext = expand("%:e")
@@ -130,8 +136,14 @@ function! SwitchFiles()
   endif
 endfunction
 
-function! Copy(text)
-  call system("echo -n " . shellescape(a:text) . " | /home/tayron/bin/copy")
+"Depends on https://github.com/sunaku/home/blob/master/bin/yank
+function! Copy(text) abort
+  let escape = system('copy', a:text)
+  if v:shell_error
+    echoerr escape
+  else
+    call writefile([escape], '/dev/tty', 'b')
+  endif
 endfunction
 
 function! GetCurrFileAndLine()
@@ -172,24 +184,19 @@ nnoremap <Leader>f :Files<CR>
 nnoremap <Leader>b :Buffers<CR>
 nnoremap <Leader>t "zyiw:Tags <C-r>z<CR>
 
-" posible LSP mappings
-" space gd -> goto definition LanguageClient_textDocument_definition()
-" space gt -> goto type definition
-" LanguageClient_textDocument_typeDefinition()
-" space gd -> goto implementation LanguageClient_textDocument_implementation()
-" space gr -> list references LanguageClient_textDocument_references()
-" space h  -> hover LanguageClient_textDocument_hover()
-
-" interesting diff command
-" vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis
-
-" zoom current tmux pane (maybe usefull for diffs)
-" call system('tmux -S ' . split($TMUX, ',')[0] . ' resize-pane -t $TMUX_PANE -Z')
+"LSP
+nnoremap <silent> <Leader>s :call LanguageClient#textDocument_switchSourceHeader()<CR>
+nnoremap <silent> <Leader>ld :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <Leader>li :call LanguageClient#textDocument_implementation()<CR>
+nnoremap <silent> <Leader>lt :call LanguageClient#textDocument_typeDefinition()<CR>
+nnoremap <silent> <Leader>lr :call LanguageClient#textDocument_references()<CR>
+nnoremap <silent> <Leader>lh :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> <Leader>le :call LanguageClient#explainErrorAtPoint()<CR>
 
 "custom
 nnoremap <Leader>d :DiffChanges<CR>
-nnoremap <Leader>g "zyiw:Grep <C-r>z .<CR>
-nnoremap <silent> <Leader>s :call SwitchFiles()<CR>
+nnoremap <Leader>g "zyiw:GrepCpp <C-r>z<CR>
+nnoremap <Leader>gg "zyiw:Grep <C-r>z<CR>
 nnoremap <silent> <Leader>c :call Copy(GetCurrFileAndLine())<CR>
 
 nnoremap <silent><C-Up> :m -2<CR>

@@ -17,30 +17,30 @@ export EDITOR='/usr/bin/vim'
 #prompt
 get_git_info() {
   local none="\x01\033[00m\x02"
-  local blue="\x01\033[38;5;69m\x02"
-  local green="\x01\033[38;5;70m\x02"
+  local d_green="\x01\033[38;5;22m\x02"
+  local l_green="\x01\033[38;5;70m\x02"
   local red="\x01\033[38;5;124m\x02"
   status=$(git status -sb 2> /dev/null)
   if [[ $status ]]; then
-    echo -en "${blue}(${none}"
+    echo -en "${d_green}(${none}"
     branch=$(echo "$status" | head -n 1 | sed 's/## //g' | sed 's/\.\.\..*//g')
     [[ $branch == "HEAD (no branch)" ]] && echo -en "${red}HEAD" || echo -n "${branch}"
     ahead=$(echo "$status" | head -n 1 | grep -c "ahead")
-    [[ $ahead != "0" ]] && echo -en "${green}^"
+    [[ $ahead != "0" ]] && echo -en "${l_green}^"
     behind=$(echo "$status" | head -n 1 | grep -c "behind")
     [[ $behind != "0" ]] && echo -en "${red}v"
     index=$(echo "$status" | grep -c "^[MADRC]")
-    [[ $index != "0" ]] && echo -en "${blue}|${green}${index}"
+    [[ $index != "0" ]] && echo -en "${d_green}|${l_green}${index}"
     wtree=$(echo "$status" | grep -c "^.[MADRCU?]")
-    [[ $wtree != "0" ]] && echo -en "${blue}|${red}${wtree}"
-    echo -en "${blue})${none}"
+    [[ $wtree != "0" ]] && echo -en "${d_green}|${red}${wtree}"
+    echo -en "${d_green})${none}"
   fi
 }
 PROMPT_COMMAND='git_info=`get_git_info`'
 none="\[\033[00m\]"
-blue="\[\033[38;5;69m\]"
-export PS1="\u${blue}@${none}\h${blue}[${none}\w${blue}]${none}\${git_info}$ "
-unset none blue
+d_green="\[\033[38;5;22m\]"
+export PS1="\u${d_green}@${none}\h${d_green}[${none}\w${d_green}]${none}\${git_info}$ "
+unset none d_green
 
 export FZF_DEFAULT_COMMAND="find -L . -type f"
 if which batcat &> /dev/null; then
